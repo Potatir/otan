@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<head>
+    <style>
+        .account-wrapper {
+            padding-top: 100px; /* Отступ от фиксированной шапки */
+            min-height: calc(100vh - 200px); /* Учитываем шапку и футер */
+            background: var(--light-gray); /* #F5F5F5 */
+        }
+        .account-card {
+            background: var(--white);
+            border-radius: 10px; /* Уменьшенные углы для стиля сайта */
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05); /* Мягкая тень */
+            padding: 40px;
+            max-width: 500px;
+            margin: 0 auto;
+            transition: transform 0.3s ease;
+        }
+        .account-card:hover {
+            transform: translateY(-5px); /* Эффект подъёма */
+        }
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--yellow); /* #FFD700 вместо синего */
+            margin: 0 auto 25px auto; /* Центрирование и больше отступа */
+            display: block;
+        }
+        .account-info {
+            font-family: 'Roboto', sans-serif; /* Как в описании уроков */
+            font-weight: 400;
+            font-size: 1.2rem;
+            color: #444; /* Более тёмный цвет */
+            line-height: 1.8;
+            text-align: center;
+        }
+        .account-info p {
+            margin: 0 0 20px 0; /* Больше отступов между строками */
+            padding: 0 10px;
+        }
+        .account-info strong {
+            color: var(--dark-gray); /* #333333 вместо синего */
+            font-weight: 800;
+            font-family: 'Poppins', sans-serif; /* Жирный Poppins */
+        }
+        .days-left {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 800;
+            font-size: 1.4rem;
+            color: var(--yellow); /* #FFD700 вместо оранжевого */
+            margin-top: 25px;
+            text-align: center;
+            text-transform: uppercase;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .account-card {
+            animation: fadeIn 0.8s ease-in; /* Анимация сохранена */
+        }
+        @media (max-width: 768px) {
+            .account-wrapper { 
+                padding-top: 80px; /* Меньше отступ */
+            }
+            .account-card { 
+                padding: 25px; 
+                max-width: 90%; 
+            }
+            .profile-avatar { 
+                width: 100px; 
+                height: 100px; 
+                margin-bottom: 20px;
+            }
+            .account-info { 
+                font-size: 1rem; 
+            }
+            .account-info p { 
+                margin: 0 0 15px 0; 
+                padding: 0 8px; 
+            }
+            .days-left { 
+                font-size: 1.2rem; 
+                margin-top: 20px; 
+            }
+        }
+        @media (max-width: 576px) {
+            .profile-avatar { 
+                width: 80px; 
+                height: 80px; 
+            }
+            .account-info { 
+                font-size: 0.9rem; 
+            }
+            .days-left { 
+                font-size: 1.1rem; 
+            }
+        }
+    </style>
+</head>
+
+<div class="account-wrapper">
+    <div class="account-card">
+
+        <div class="account-info">
+            <p><strong>Логин:</strong> {{ user.username }}</p>
+            <p><strong>Имя:</strong> {{ user.first_name }} {{ user.last_name }}</p>
+            <p><strong>Телефон:</strong> {{ profile.phone|default:"Не указан" }}</p>
+            {% if not user.is_superuser %}
+            <p class="days-left">Осталось дней: {{ days_left }}</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

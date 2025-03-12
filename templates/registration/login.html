@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<head>
+    <style>
+        .login-wrapper {
+            padding-top: 100px; /* Отступ от фиксированной шапки */
+            min-height: calc(100vh - 200px); /* Учитываем шапку и футер */
+            background: var(--light-gray); /* #F5F5F5 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .login-card {
+            background: var(--white);
+            border-radius: 10px; /* Уменьшенные углы в стиле сайта */
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05); /* Мягкая тень */
+            padding: 40px;
+            max-width: 400px;
+            width: 100%;
+            transition: transform 0.3s ease;
+        }
+        .login-card:hover {
+            transform: translateY(-5px); /* Эффект подъёма */
+        }
+        .login-card h1 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 800;
+            font-size: 2rem; /* Чуть крупнее */
+            color: var(--dark-gray); /* #333333 */
+            margin-bottom: 30px;
+            text-align: center;
+            text-transform: uppercase;
+        }
+        .login-card .form-label {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 800;
+            font-size: 1.1rem;
+            color: var(--dark-gray); /* #333333 вместо синего */
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+        .login-card .form-control {
+            border-radius: 5px; /* Уменьшенные углы */
+            border: 1px solid #ddd;
+            padding: 12px 15px; /* Больше внутреннего пространства */
+            font-family: 'Roboto', sans-serif;
+            font-weight: 400;
+            font-size: 1rem;
+            color: #444;
+            transition: border-color 0.3s ease;
+        }
+        .login-card .form-control:focus {
+            border-color: var(--yellow); /* #FFD700 */
+            box-shadow: 0 0 5px rgba(255, 215, 0, 0.3);
+            outline: none;
+        }
+        .login-card .btn-login {
+            background: var(--dark-gray); /* #333333 */
+            border: none;
+            border-radius: 5px; /* Уменьшенные углы */
+            padding: 12px;
+            width: 100%;
+            color: var(--yellow); /* #FFD700 */
+            font-family: 'Poppins', sans-serif;
+            font-weight: 800;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            transition: background 0.3s ease, transform 0.3s ease;
+        }
+        .login-card .btn-login:hover {
+            background: #4a4a4a; /* Чуть светлее тёмно-серого */
+            transform: scale(1.05);
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .login-card {
+            animation: fadeIn 0.8s ease-in; /* Анимация сохранена */
+        }
+        @media (max-width: 768px) {
+            .login-wrapper { 
+                padding-top: 80px; /* Меньше отступ */
+            }
+            .login-card { 
+                padding: 25px; 
+                max-width: 90%; 
+            }
+            .login-card h1 { 
+                font-size: 1.6rem; 
+                margin-bottom: 20px; 
+            }
+            .login-card .form-label { 
+                font-size: 1rem; 
+            }
+            .login-card .form-control { 
+                padding: 10px 12px; 
+                font-size: 0.9rem; 
+            }
+            .login-card .btn-login { 
+                font-size: 1rem; 
+                padding: 10px; 
+            }
+        }
+    </style>
+</head>
+
+<div class="login-wrapper">
+    <div class="login-card">
+        <h1>Вход в систему</h1>
+        <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="{{ form.username.id_for_label }}" class="form-label">Логин</label>
+                {{ form.username }}
+            </div>
+            <div class="mb-3">
+                <label for="{{ form.password.id_for_label }}" class="form-label">Пароль</label>
+                {{ form.password }}
+            </div>
+            <button type="submit" class="btn btn-login">Войти</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<head>
+    <style>
+        .blocked-wrapper {
+            padding-top: 100px; /* Отступ от фиксированной шапки */
+            min-height: calc(100vh - 200px); /* Учитываем шапку и футер */
+            background: var(--light-gray); /* #F5F5F5 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .blocked-card {
+            background: var(--white); /* #FFFFFF */
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05); /* Мягкая тень */
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        .blocked-card:hover {
+            transform: translateY(-5px); /* Эффект подъёма */
+        }
+        .blocked-card h1 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 800;
+            font-size: 2rem;
+            color: var(--dark-gray); /* #333333 */
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+        .blocked-card p {
+            font-family: 'Roboto', sans-serif;
+            font-weight: 400;
+            font-size: 1.1rem;
+            color: #444;
+            line-height: 1.6;
+            margin: 0 0 30px 0;
+        }
+        .blocked-card .btn-return {
+            background: var(--dark-gray); /* #333333 */
+            border: none;
+            border-radius: 5px;
+            padding: 12px 25px;
+            color: var(--yellow); /* #FFD700 */
+            font-family: 'Poppins', sans-serif;
+            font-weight: 800;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            text-decoration: none;
+            display: inline-block;
+            transition: background 0.3s ease, transform 0.3s ease;
+        }
+        .blocked-card .btn-return:hover {
+            background: #4a4a4a; /* Чуть светлее тёмно-серого */
+            transform: scale(1.05);
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .blocked-card {
+            animation: fadeIn 0.8s ease-in;
+        }
+        @media (max-width: 768px) {
+            .blocked-wrapper {
+                padding-top: 80px;
+            }
+            .blocked-card {
+                padding: 25px;
+                max-width: 90%;
+            }
+            .blocked-card h1 {
+                font-size: 1.6rem;
+                margin-bottom: 15px;
+            }
+            .blocked-card p {
+                font-size: 1rem;
+                margin-bottom: 20px;
+            }
+            .blocked-card .btn-return {
+                font-size: 1rem;
+                padding: 10px 20px;
+            }
+        }
+    </style>
+</head>
+
+<div class="blocked-wrapper">
+    <div class="blocked-card">
+        <h1>Срок истёк</h1>
+        <p>Ваш аккаунт заблокирован, так как прошло 76 дней с момента регистрации.</p>
+        <a href="{% url 'login' %}" class="btn-return">Вернуться на страницу входа</a>
+    </div>
+</div>
+{% endblock %}

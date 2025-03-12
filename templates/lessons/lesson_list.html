@@ -1,0 +1,441 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<head>
+    <style>
+        .lessons-wrapper {
+            padding-top: 100px;
+            min-height: calc(100vh - 200px);
+            background: var(--light-gray);
+        }
+        .lessons-container {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .lessons-sidebar {
+            width: 250px;
+            background: var(--white);
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            padding: 15px;
+            margin-right: 30px;
+        }
+        .lesson-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .lesson-item {
+            margin-bottom: 8px;
+        }
+        .lesson-link {
+            display: block;
+            background: var(--dark-gray);
+            color: var(--yellow);
+            font-family: 'Poppins', sans-serif;
+            font-weight: 800;
+            font-size: 1.1rem;
+            padding: 10px 15px;
+            text-transform: uppercase;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background 0.3s ease;
+            cursor: pointer;
+        }
+        .lesson-link:hover, .lesson-link.active {
+            background: #4a4a4a;
+        }
+        .lesson-content {
+            flex: 1;
+            background: var(--white);
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            padding: 25px;
+            width: auto;
+            height: auto;
+            overflow: hidden;
+        }
+        .lesson-video {
+            width: 98%;
+            height: 0;
+            padding-bottom: 55.125%;
+            border-radius: 5px;
+            margin: 0 auto 20px auto;
+            display: block;
+            background: #000;
+            position: relative;
+        }
+        .lesson-video video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        .lesson-content h2 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 800;
+            font-size: 1.8rem;
+            color: var(--dark-gray);
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+        .lesson-content p {
+            font-family: 'Roboto', sans-serif;
+            font-weight: 400;
+            font-size: 1rem;
+            color: #444;
+            line-height: 1.8;
+            margin: 0 0 25px 0;
+            padding: 0 10px;
+        }
+        .quiz-container {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 5px;
+        }
+        .quiz-question {
+            margin-bottom: 20px;
+        }
+        .quiz-question p {
+            font-family: 'Roboto', sans-serif;
+            font-weight: 400;
+            font-size: 1.1rem;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .quiz-option {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            position: relative;
+        }
+        .quiz-option:hover {
+            background-color: rgba(0, 0, 0, 0.1); /* Усиленное затемнение (10%) */
+        }
+        .quiz-option input {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .quiz-option label {
+            font-family: 'Roboto', sans-serif;
+            font-size: 1rem;
+            color: #444;
+            flex: 1;
+            margin: 0;
+            position: relative;
+            padding-left: 25px; /* Отступ для индикатора */
+        }
+        .quiz-option label::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
+            border: 2px solid #444;
+            border-radius: 50%;
+            background: #fff;
+            transition: all 0.3s ease;
+        }
+        .quiz-option input:checked + label::before {
+            border-color: var(--dark-gray);
+        }
+        .quiz-option input:checked + label::after {
+            content: '';
+            position: absolute;
+            left: 4px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--dark-gray);
+        }
+        .quiz-submit {
+            background: var(--dark-gray);
+            color: var(--yellow);
+            font-family: 'Poppins', sans-serif;
+            font-weight: 800;
+            font-size: 1.1rem;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            display: block;
+            margin: 20px auto 0;
+        }
+        .quiz-submit:hover {
+            background: #4a4a4a;
+        }
+        .correct {
+            background-color: rgba(40, 167, 69, 0.3); /* Усиленный зелёный (30%) */
+            color: #1e7e34; /* Темнее зелёный */
+        }
+        .incorrect {
+            background-color: rgba(220, 53, 69, 0.3); /* Усиленный красный (30%) */
+            color: #a71d2a; /* Темнее красный */
+        }
+        .mobile-lesson-select {
+            display: none;
+        }
+        @media (max-width: 768px) {
+            .lessons-wrapper { padding-top: 80px; }
+            .lessons-container { flex-direction: column; align-items: center; }
+            .lessons-sidebar { display: none; }
+            .mobile-lesson-select {
+                display: block;
+                width: 100%;
+                max-width: 300px;
+                margin: 0 auto 20px auto;
+            }
+            .mobile-lesson-select select {
+                width: 100%;
+                padding: 12px 15px;
+                background: var(--dark-gray);
+                color: var(--yellow);
+                font-family: 'Poppins', sans-serif;
+                font-weight: 800;
+                font-size: 1rem;
+                text-transform: uppercase;
+                border: none;
+                border-radius: 5px;
+                appearance: none;
+                background-image: url('data:image/svg+xml;utf8,<svg fill="%23FFD700" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+                background-repeat: no-repeat;
+                background-position: right 10px center;
+                cursor: pointer;
+            }
+            .mobile-lesson-select select:focus {
+                outline: none;
+                background-color: #4a4a4a;
+            }
+            .lesson-content { padding: 20px; width: 100%; max-width: 500px; margin: 0 auto; }
+            .lesson-content h2 { font-size: 1.4rem; }
+            .lesson-content p { font-size: 0.9rem; margin: 0 0 20px 0; padding: 0 8px; }
+            .quiz-question p { font-size: 1rem; }
+            .quiz-option { padding: 6px 10px; }
+            .quiz-option label { font-size: 0.9rem; padding-left: 20px; }
+            .quiz-option label::before { width: 14px; height: 14px; }
+            .quiz-option input:checked + label::after { width: 6px; height: 6px; left: 4px; }
+            .quiz-submit { font-size: 1rem; padding: 10px 20px; }
+        }
+    </style>
+</head>
+
+<div class="lessons-wrapper">
+    <div class="container">
+        <div class="lessons-container">
+            <div class="lessons-sidebar">
+                <ul class="lesson-list">
+                    {% for lesson in lessons %}
+                    <li class="lesson-item">
+                        <a class="lesson-link" data-lesson-id="{{ forloop.counter }}">{{ lesson.title }}</a>
+                    </li>
+                    {% empty %}
+                    <li class="lesson-item">Уроки пока недоступны.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="mobile-lesson-select">
+                <select id="mobile-lesson-dropdown">
+                    {% for lesson in lessons %}
+                    <option value="{{ forloop.counter }}">{{ lesson.title }}</option>
+                    {% empty %}
+                    <option value="0">Уроки пока недоступны</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="lesson-content" id="lesson-content">
+                {% if lessons %}
+                <h2>{{ lessons.0.title }}</h2>
+                {% if lessons.0.video_file %}
+                <div class="lesson-video">
+                    <video controls>
+                        <source src="{{ lessons.0.video_file.url }}" type="video/mp4">
+                        Ваш браузер не поддерживает видео.
+                    </video>
+                </div>
+                {% endif %}
+                <p>{{ lessons.0.description }}</p>
+                {% if lessons.0.quizzes.all %}
+                <div class="quiz-container" data-lesson-id="1">
+                    {% for quiz in lessons.0.quizzes.all %}
+                    <div class="quiz-question">
+                        <p>{{ quiz.question }}</p>
+                        <div class="quiz-option" data-value="A">
+                            <input type="radio" name="quiz-{{ quiz.id }}" value="A" id="option-a-{{ quiz.id }}">
+                            <label for="option-a-{{ quiz.id }}">{{ quiz.option_a }}</label>
+                        </div>
+                        <div class="quiz-option" data-value="B">
+                            <input type="radio" name="quiz-{{ quiz.id }}" value="B" id="option-b-{{ quiz.id }}">
+                            <label for="option-b-{{ quiz.id }}">{{ quiz.option_b }}</label>
+                        </div>
+                        {% if quiz.option_c %}
+                        <div class="quiz-option" data-value="C">
+                            <input type="radio" name="quiz-{{ quiz.id }}" value="C" id="option-c-{{ quiz.id }}">
+                            <label for="option-c-{{ quiz.id }}">{{ quiz.option_c }}</label>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                    <button class="quiz-submit">Подтвердить</button>
+                </div>
+                {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const lessons = [
+            {% for lesson in lessons %}
+            {
+                id: {{ forloop.counter }},
+                title: "{{ lesson.title }}",
+                video: "{% if lesson.video_file %}{{ lesson.video_file.url }}{% endif %}",
+                description: "{{ lesson.description|escapejs }}",
+                quizzes: [
+                    {% for quiz in lesson.quizzes.all %}
+                    {
+                        id: {{ quiz.id }},
+                        question: "{{ quiz.question|escapejs }}",
+                        option_a: "{{ quiz.option_a|escapejs }}",
+                        option_b: "{{ quiz.option_b|escapejs }}",
+                        option_c: "{{ quiz.option_c|escapejs }}",
+                        correct_answer: "{{ quiz.correct_answer }}"
+                    },
+                    {% endfor %}
+                ]
+            },
+            {% endfor %}
+        ];
+
+        const links = document.querySelectorAll('.lesson-link');
+        const contentDiv = document.getElementById('lesson-content');
+        const mobileDropdown = document.getElementById('mobile-lesson-dropdown');
+
+        function updateContent(lessonId) {
+            const lesson = lessons.find(l => l.id === lessonId);
+            if (lesson) {
+                let quizzesHtml = '';
+                if (lesson.quizzes.length > 0) {
+                    quizzesHtml = `<div class="quiz-container" data-lesson-id="${lesson.id}">`;
+                    lesson.quizzes.forEach(quiz => {
+                        quizzesHtml += `
+                            <div class="quiz-question">
+                                <p>${quiz.question}</p>
+                                <div class="quiz-option" data-value="A">
+                                    <input type="radio" name="quiz-${quiz.id}" value="A" id="option-a-${quiz.id}">
+                                    <label for="option-a-${quiz.id}">${quiz.option_a}</label>
+                                </div>
+                                <div class="quiz-option" data-value="B">
+                                    <input type="radio" name="quiz-${quiz.id}" value="B" id="option-b-${quiz.id}">
+                                    <label for="option-b-${quiz.id}">${quiz.option_b}</label>
+                                </div>
+                                ${quiz.option_c ? `
+                                    <div class="quiz-option" data-value="C">
+                                        <input type="radio" name="quiz-${quiz.id}" value="C" id="option-c-${quiz.id}">
+                                        <label for="option-c-${quiz.id}">${quiz.option_c}</label>
+                                    </div>
+                                ` : ''}
+                            </div>`;
+                    });
+                    quizzesHtml += `<button class="quiz-submit">Подтвердить</button></div>`;
+                }
+                contentDiv.innerHTML = `
+                    <h2>${lesson.title}</h2>
+                    ${lesson.video ? `
+                        <div class="lesson-video">
+                            <video controls>
+                                <source src="${lesson.video}" type="video/mp4">
+                                Ваш браузер не поддерживает видео.
+                            </video>
+                        </div>
+                    ` : ''}
+                    <p>${lesson.description}</p>
+                    ${quizzesHtml}
+                `;
+                attachQuizListeners();
+            }
+        }
+
+        function attachQuizListeners() {
+            const quizOptions = document.querySelectorAll('.quiz-option');
+            quizOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    const input = option.querySelector('input');
+                    if (!input.disabled) {
+                        input.checked = true;
+                    }
+                });
+            });
+
+            const quizButtons = document.querySelectorAll('.quiz-submit');
+            quizButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const quizContainer = button.closest('.quiz-container');
+                    const lessonId = parseInt(quizContainer.getAttribute('data-lesson-id'));
+                    const lesson = lessons.find(l => l.id === lessonId);
+                    const questions = quizContainer.querySelectorAll('.quiz-question');
+
+                    questions.forEach((question, index) => {
+                        const quiz = lesson.quizzes[index];
+                        const options = question.querySelectorAll('.quiz-option');
+                        const selectedOption = question.querySelector(`input[name="quiz-${quiz.id}"]:checked`);
+
+                        options.forEach(opt => opt.classList.remove('correct', 'incorrect'));
+
+                        const correctOption = question.querySelector(`[data-value="${quiz.correct_answer}"]`);
+                        correctOption.classList.add('correct');
+
+                        if (selectedOption) {
+                            const selectedValue = selectedOption.value;
+                            const selectedOptionDiv = selectedOption.closest('.quiz-option');
+                            if (selectedValue !== quiz.correct_answer) {
+                                selectedOptionDiv.classList.add('incorrect');
+                            }
+                        }
+
+                        options.forEach(opt => opt.querySelector('input').disabled = true);
+                    });
+                    button.disabled = true;
+                });
+            });
+        }
+
+        links.forEach(link => {
+            link.addEventListener('click', () => {
+                links.forEach(l => l.classList.remove('active'));
+                link.classList.add('active');
+                const lessonId = parseInt(link.getAttribute('data-lesson-id'));
+                updateContent(lessonId);
+            });
+        });
+
+        mobileDropdown.addEventListener('change', () => {
+            const lessonId = parseInt(mobileDropdown.value);
+            updateContent(lessonId);
+        });
+
+        if (links.length > 0) {
+            links[0].classList.add('active');
+            mobileDropdown.value = 1;
+            updateContent(1);
+        }
+    });
+</script>
+{% endblock %}
